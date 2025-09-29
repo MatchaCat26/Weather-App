@@ -17,3 +17,4 @@ def wind_label(mph:float)->str:
     if mph>=15:return "Its breezey outside"
     return "There is almost no wind outside"
 
+
