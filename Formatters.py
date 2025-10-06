@@ -17,4 +17,8 @@ def wind_label(mph:float)->str:
     if mph>=15:return "Its breezey outside"
     return "There is almost no wind outside"
 
-
+def render_daily_table(dates:Iterable[str],highs:Iterable[float],lows:Iterable[float],unit_label:str)->str:
+    rows=["Date               High       Low"]
+    for d,h,l in zip(dates,highs,lows):
+        rows.append(f"{d} {h:>4.0f}{unit_label} {l:<4.0f}{unit_label}")
+    return "\n".join(rows)
