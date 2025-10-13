@@ -22,6 +22,8 @@ def geocode_city_mock(city:str):
 def get_current_weather_mock(city:str,units:str="fahrenheit"):
     db=_load_data()
     city_key=city.strip().lower()
+    print("DEBUG using data file: ",DATA_FILE)
+    print("DEBUG cities in file: ",[str(r.get("name")).repr()if hasattr(str,"repr")else r.get("name")for r in db.get("cities",[])])
     for rec in db["cities"]:
         if rec["name"].lower==city_key:
             cw=rec["current"]

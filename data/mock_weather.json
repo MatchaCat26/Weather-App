@@ -1,0 +1,24 @@
+{
+    "cities":[
+        {
+            "name":"Dallas",
+            "country":"USA",
+            "lat":32.7767,
+            "lon":-96.7970,
+            "current":{
+                "time":"2025-10-13T17:38:00",
+                "temp_f":-120.98,
+                "temp_c":-50.8765,
+                "wind_mph":50.998,
+                "wind_kmh":900.5,
+                "code":1
+            },
+            "daily":[
+                {
+                    "date":"2025-10-13","high_f":1000.0,"low_f":-1000.0,"high_c":500.0,"low_c":-500.0,"code":1
+                }
+            ]
+
+        }
+    ]
+}

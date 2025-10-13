@@ -1,5 +1,5 @@
 from typing import Iterable
-from codes import CODES
+from Codes import CODES
 
 def farhenheit_to_celsius(f: float)->float:
     return (f-32.0)*5.0/9.0
