@@ -7,11 +7,17 @@ from services import(
 from Formatters import outfit_advice, wind_label, render_daily_table
 
 def prompt_city()->str:
-    return input("Enter a city: (New York, Dallas, Los Angeles)").strip()
+    s=input("Enter a city: (New York, Dallas, Los Angeles)").strip()
+    print("[OK] City set to: ",repr(s))
+    return s 
 
 def prompt_units()->str:
     u=input("Units - f or c?: ").strip().lower()
-    return "fahrenheit" if u == "f" else "celcius"
+    if u in ("c","cel","celsius"):
+        print("[OK] Units set to celsius")
+        return "celsius"
+    print("[OK] Units set to fahrenheit")
+    return "fahrenheit"
 
 def show_current(city:str,units:str):
     try:
@@ -20,11 +26,13 @@ def show_current(city:str,units:str):
         print(f"temperature: {cw['temp']}{cw['unit_temp']} | wind: {cw['windspeed']}")
         temp_f=cw['temp'] if units == 'fahrenheit' else (cw['temp']*9/5+32)
         print(f"advice: ", outfit_advice(temp_f))
+        print(f"wind: ",wind_label (cw['windspeed']))
     except NotFoundError as e:
         print("error: ",e)
 
 def show_forecast(city:str,units:str):
     try:
+        print("[DEBUG] City sent to forecast: ",repr(city),"|units: ",repr(units))
         f=get_daily_forcast_mock(city,days=5,units=units)
         print("\n5day forecast:")
         print(render_daily_table(f['dates'],f['highs'],f['lows'],f['unit']))
@@ -38,14 +46,15 @@ def menu():
     while True:
         print("\nmenu\n1. Current Weather\n2. 5 Day Forecast\n3. Change City\n4. Chagne Units\n5. Quit")
         choice=input("choose: ").strip()
+        print ("[DEBUG] Choice = ",repr(choice))
         if choice=="1":
             show_current(city,units)
         elif choice=="2":
             show_forecast(city,units)
         elif choice=="3":
-            city==prompt_city
+            city==prompt_city()
         elif choice=="4":
-            units==prompt_units
+            units==prompt_units()
         elif choice=="5":
             print("GOODBYE FOREVER AND EVER AND EVER :(");break
         else:

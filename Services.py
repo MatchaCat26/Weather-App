@@ -22,10 +22,10 @@ def geocode_city_mock(city:str):
 def get_current_weather_mock(city:str,units:str="fahrenheit"):
     db=_load_data()
     city_key=city.strip().lower()
-    print("DEBUG using data file: ",DATA_FILE)
-    print("DEBUG cities in file: ",[str(r.get("name")).repr()if hasattr(str,"repr")else r.get("name")for r in db.get("cities",[])])
+    #print("DEBUG using data file: ",DATA_FILE)
+    #print("DEBUG cities in file: ",[str(r.get("name")).repr()if hasattr(str,"repr")else r.get("name")for r in db.get("cities",[])])
     for rec in db["cities"]:
-        if rec["name"].lower==city_key:
+        if rec["name"].lower()==city_key:
             cw=rec["current"]
             return{
                 "time":cw["time"],
@@ -39,10 +39,15 @@ def get_current_weather_mock(city:str,units:str="fahrenheit"):
 
 def get_daily_forcast_mock(city:str,days:int=5,units:str="fahrenheit"):
     db=_load_data()
-    city_key=city.strip().lower()
-    for rec in db["cities"]:
-        if rec["name"].lower==city_key:
-            d=rec["daily"][:days]
+    city_key=str(city).strip().lower()
+    for rec in db.get("cities",[]):
+        rec_name=str(rec.get("name","")).strip().lower()
+        if rec_name==city_key:
+            daily=rec.get("daily")or[]
+            if not daily:
+                raise NotFoundError(f"No Five Day Forecast Data For '{city}'")
+            d=daily[:days]
+
             dates=[x["date"]for x in d]
             highs=[x["high_f"]if units== "fahrenheit" else x["high_c"]for x in d]
             lows=[x["low_f"]if units== "fahrenheit" else x["low_c"]for x in d]
@@ -55,4 +60,5 @@ def get_daily_forcast_mock(city:str,days:int=5,units:str="fahrenheit"):
                 "codes":codes,
                 "unit":unit,
             }
+    print("[DEBUG] Available cities: ",[r.get("name")for r in db.get("cities",[])])
     raise NotFoundError(f"no forcast for '{city}'")
