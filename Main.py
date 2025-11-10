@@ -1,10 +1,15 @@
-from services import(
-    geocode_city_mock,
-    get_current_weather_mock,
-    get_daily_forcast_mock,
-    NotFoundError
-)
 from Formatters import outfit_advice, wind_label, render_daily_table
+
+USE_LIVE = True
+if USE_LIVE:
+    from api_services import (geocode_city, get_current_weather, get_daily_forecast, ApiError as DataError)
+else: 
+    from services import(
+    geocode_city_mock as geocode_city,
+    get_current_weather_mock as get_current_weather,
+    get_daily_forcast_mock as get_daily_forecast,
+    NotFoundError as DataError
+)
 
 def prompt_city()->str:
     s=input("Enter a city: (New York, Dallas, Los Angeles)").strip()
@@ -21,22 +26,34 @@ def prompt_units()->str:
 
 def show_current(city:str,units:str):
     try:
-        cw=get_current_weather_mock(city,units=units)
-        print(f"\ncurrent weather for {city.title()} at {cw['time']}")
+        if USE_LIVE:
+            lat, lon, name, country = geocode_city(city)
+            cw = get_current_weather(lat, lon, units=units)
+            display_name = f"{name}, {country}".strip().strip(",")
+            print (f"DEBUG lve current:{lat=},{lon=},{display_name}   |  debug the bug")
+        else:
+            cw=get_current_weather(city,units=units)
+            display_name = city.title()
+        print(f"\ncurrent weather for {display_name} at {cw['time']}")
         print(f"temperature: {cw['temp']}{cw['unit_temp']} | wind: {cw['windspeed']}")
         temp_f=cw['temp'] if units == 'fahrenheit' else (cw['temp']*9/5+32)
         print(f"advice: ", outfit_advice(temp_f))
         print(f"wind: ",wind_label (cw['windspeed']))
-    except NotFoundError as e:
+    except DataError as e:
         print("error: ",e)
 
 def show_forecast(city:str,units:str):
     try:
+        if USE_LIVE:
+            lat,lon,name,country=geocode_city(city)
+            f=get_daily_forecast(lat,lon,days=5,units=units)
+            print (f"DEBUG lve current:{lat=},{lon=},city={name},{country}   |  debug the bug")
+        else:
+            f=get_daily_forecast(city,days=5,units=units)
         print("[DEBUG] City sent to forecast: ",repr(city),"|units: ",repr(units))
-        f=get_daily_forcast_mock(city,days=5,units=units)
         print("\n5day forecast:")
         print(render_daily_table(f['dates'],f['highs'],f['lows'],f['unit']))
-    except NotFoundError as e: print("error: ",e)
+    except DataError as e: print("error: ",e)
 
 def menu():
     print("THE WEATHER APP :)")
@@ -52,9 +69,9 @@ def menu():
         elif choice=="2":
             show_forecast(city,units)
         elif choice=="3":
-            city==prompt_city()
+            city=prompt_city()
         elif choice=="4":
-            units==prompt_units()
+            units=prompt_units()
         elif choice=="5":
             print("GOODBYE FOREVER AND EVER AND EVER :(");break
         else:

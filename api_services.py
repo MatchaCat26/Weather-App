@@ -29,7 +29,7 @@ def geocode_city(city:str)->Tuple[float,float,str,str]:
     try:
         r = requests.get(
             GEO_URL,
-            parems = {"name": city ,"count":1},
+            params = {"name": city ,"count":1},
             timeout = DEFAULT_TIMEOUT
         )
         r.raise_for_status()
